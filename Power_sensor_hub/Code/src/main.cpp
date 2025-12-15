@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include <Arduino_FreeRTOS.h>
 #include <FreeRTOSConfig.h>
 #include <task.h>
@@ -22,16 +23,17 @@ void task_LEDs      (void* pvParameters) { static_cast<Ultrasonic*>(pvParameters
 
 // set up tasks and start scheduler
 void setup() {
-    imu      .init();
-    led_array.init();
-    ultra    .init();
+    // I2C init
+    Wire.begin   ();
 
+    // create tasks
     xTaskCreate(task_IMU       , "IMU task"              , 75, &imu      , 2, NULL);
     xTaskCreate(task_ultrasonic, "ultrasonic sensor task", 75, &led_array, 2, NULL);
-    xTaskCreate(task_LEDs      , "RGB LED task"          , 75, &ultra    , 2, NULL);
+    // xTaskCreate(task_LEDs      , "RGB LED task"          , 75, &ultra    , 2, NULL);
 
+    // begin scheduler
     vTaskStartScheduler();
 }
 
 // mandatory for Arduino
-void loop();
+void loop() {};
